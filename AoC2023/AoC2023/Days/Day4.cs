@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace AoC2023.Days;
+﻿namespace AoC2023.Days;
 
 public static class Day4
 {
@@ -47,6 +45,7 @@ public static class Day4
     {
         var cards = new Queue<string>();
         var winningCardsCount = 0;
+        var cache = new Dictionary<int, IEnumerable<int>>();
 
         foreach (var line in input)
         {
@@ -56,31 +55,38 @@ public static class Day4
         while (cards.Count > 0)
         {
             var line = cards.Dequeue();
-            var leftAndRight = line.Split('|');
-            var left = leftAndRight[0];            
-            var right = leftAndRight[1];
+            var currentCard = int.Parse(line.Split('|')[0].Split(':')[0].Replace("Card", "").Trim());
+            IEnumerable<int> matches;
 
-            var currentCard = int.Parse(left.Split(':')[0].Replace("Card", "").Trim());
+            if (!cache.ContainsKey(currentCard))
+            {
+                var leftAndRight = line.Split('|');
+                var left = leftAndRight[0];
+                var right = leftAndRight[1];
 
-            var winningNumbers = left.Split(":")[1]
-                                .Split(" ")
-                                .Where(n => !string.IsNullOrWhiteSpace(n))
+                var winningNumbers = left.Split(":")[1]
+                                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)                                    
+                                    .Select(w => int.Parse(w.Trim()))
+                                    .ToList();
+
+                var myNumbers = right.Split(" ", StringSplitOptions.RemoveEmptyEntries)                                
                                 .Select(w => int.Parse(w.Trim()))
                                 .ToList();
 
-            var myNumbers = right.Split(" ")
-                            .Where(w => !String.IsNullOrWhiteSpace(w))
-                            .Select(w => int.Parse(w.Trim()))
-                            .ToList();
-
-            var matches = winningNumbers.Intersect(myNumbers);
-            winningCardsCount++;
-
-            for (int i = 0; i < matches.Count(); i++)
+                matches = winningNumbers.Intersect(myNumbers);
+                cache.Add(currentCard, matches);
+            }
+            else
             {
+                matches = cache[currentCard];                
+            }
+
+            winningCardsCount++;
+            for (int i = 0; i < matches.Count(); i++)
+            {                
                 cards.Enqueue(input[currentCard + i]);
-            }            
+            }
         }        
         Console.WriteLine(winningCardsCount);
-    }
+    }   
 }
