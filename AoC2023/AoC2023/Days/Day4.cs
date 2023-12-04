@@ -5,8 +5,9 @@ public static class Day4
     public static async Task Run()
     {
         var input = await InputGetter.GetFromLinesAsString(4);
-        await PartOne(input); //26914
-        await PartTwo(input); //13080971
+        var timedExecutor = new TimedExecutor();
+        await timedExecutor.ExecuteTimed(() => PartOne(input)); //26914
+        await timedExecutor.ExecuteTimed(() => PartTwo(input)); //13080971
     }
 
     private static async Task PartOne(string[] input)
