@@ -1,4 +1,4 @@
 ﻿global using AoC2023.Utils;
 using AoC2023.Days;
 
-await Day8.Run();
+await Day9.Run();
